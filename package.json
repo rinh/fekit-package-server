@@ -1,0 +1,20 @@
+{
+  "name": "fekit-package-server",
+  "version": "0.0.0",
+  "dependencies": {
+    "nano":"*",
+    "connect" : "2.7.x" , 
+    "urlrouter" : "0.2.x" , 
+    "coffee-script":"*",
+    "mocha":"*",
+    "temp":"*",
+    "tar.gz":"*",
+    "chai":"*",
+    "fstream":"*"
+  },
+  "description": "",
+  "main": "index.js",
+  "repository": "",
+  "author": "",
+  "license": "BSD"
+}
