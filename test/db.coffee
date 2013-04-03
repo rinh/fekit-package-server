@@ -94,9 +94,8 @@ describe 'db' , ->
 
             done()
 
-
-
-
+    afterEach ( done ) ->
+        db.clearDB done
 
 
 
