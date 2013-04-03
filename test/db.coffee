@@ -1,3 +1,4 @@
+async = require 'async'
 db = require "../src/db"
 path = require "path"
 assert = require('chai').assert
@@ -63,6 +64,39 @@ describe 'db' , ->
 
     afterEach ( done ) ->
         db.clearDB done
+
+
+describe 'db' , ->
+
+    before ( done ) ->
+
+        clr = ( ok ) ->
+            db.clearDB ok
+
+        a = ( ok ) ->
+            db.save mockConfig('0.0.1') , mockTar , ok
+
+        b = ( ok ) ->
+            db.save mockConfig('0.0.2') , mockTar , ok
+
+        async.series [clr,a,b] , () ->
+            done()
+
+    it '#find() should be right.' , (done) ->
+
+        db.find 'datepicker' , ( err , item ) ->
+
+            assert.equal err , null
+            assert.notEqual item.versions['0.0.1'] , null
+            assert.notEqual item.versions['0.0.2'] , null
+            assert.notEqual item._attachments['datepicker-0.0.2.tgz'] , null
+            assert.notEqual item._attachments['datepicker-0.0.1.tgz'] , null
+
+            done()
+
+
+
+
 
 
 

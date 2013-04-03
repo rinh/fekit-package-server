@@ -71,6 +71,8 @@ startApp = () ->
 
         app.get '/:pkgname/lasest' , ( req , res , next ) ->
 
+        app.get '/:package/:version/-/:tarname' , ( req , res , next ) ->
+
         ###
 
 
