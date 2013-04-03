@@ -51,10 +51,6 @@ exports.find = find = ( name , cb ) ->
             cb( err , body )
 
 
-exports.find_package = find_package = ( name , cb ) ->
-
-
-
 exports.save = save = ( config , zipfilepath , cb ) ->
 
     _id = config.name

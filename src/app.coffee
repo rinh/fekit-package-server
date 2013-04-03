@@ -54,7 +54,8 @@ startApp = () ->
                             if assert(err,res) then return
 
                             wrap_output( res )
-        
+
+###        
 
         app.get '/:pkgname' , ( req , res , next ) ->
 
@@ -64,7 +65,7 @@ startApp = () ->
 
                 wrap_output( res , pkg )
 
-###
+
 
         app.get '/:pkgname/:version' , ( req , res , next ) ->
 
