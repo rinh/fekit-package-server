@@ -1,5 +1,6 @@
 # https://github.com/cranic/node-tar.gz
 targz = require 'tar.gz'
+semver = require 'semver'
 fs = require 'fs'
 
 checkGzipFormat = ( path , cb ) ->
@@ -36,6 +37,16 @@ readPackage = ( path , callback ) ->
             
             try
                 json = JSON.parse(conf_str)
+
+                if !json.name 
+                    return callback("'fekit.config' hasn't name field.")
+
+                if !json.version 
+                    return callback("'fekit.config' hasn't version field.")
+
+                if !semver.valid( json.version )
+                    return callback("'fekit.config' version invalid.")
+
                 callback( null , json , path )
             catch err
                 return callback("'fekit.config' is invalid json string.")

@@ -10,7 +10,8 @@
     "temp":"*",
     "tar.gz":"*",
     "chai":"*",
-    "fstream":"*"
+    "fstream":"*",
+    "semver":"*"
   },
   "description": "",
   "main": "index.js",

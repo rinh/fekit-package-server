@@ -6,9 +6,15 @@ connect = require "connect"
 urlrouter = require "urlrouter"
 
 readPackage = require "./read_package"
-checkPackageConfig = require "./check_package_config"
 db = require "./db"
 
+
+wrap_output = ( res , json ) ->
+    res.end JSON.stringify({
+            ret : true , 
+            errmsg : "" , 
+            data : if json then json else {}
+        })
 
 assert = ( err , res ) ->
     if err 
@@ -44,21 +50,21 @@ startApp = () ->
                 readPackage path , ( err , pkgconfig , tmpfile ) ->
                     if assert(err,res) then return
 
-                    checkPackageConfig pkgconfig , ( err ) ->
-                        if assert(err,res) then return
-
                         db.save pkgconfig , tmpfile , ( err ) ->
                             if assert(err,res) then return
 
-                            res.end JSON.stringify({
-                                    ret : true ,
-                                    errmsg : ""
-                                })
-
-
-        ###
+                            wrap_output( res )
         
+
         app.get '/:pkgname' , ( req , res , next ) ->
+
+            db.find_package req.params.pkgname , ( err , pkg ) ->
+
+                if assert(err,res) then return
+
+                wrap_output( res , pkg )
+
+###
 
         app.get '/:pkgname/:version' , ( req , res , next ) ->
 
