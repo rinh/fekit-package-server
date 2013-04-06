@@ -4,9 +4,11 @@ request = require "request"
 http = require "http"
 connect = require "connect"
 urlrouter = require "urlrouter"
+url = require("url")
 
 readPackage = require "./read_package"
 db = require "./db"
+Entity = require "./entity"
 
 
 wrap_output = ( res , json ) ->
@@ -38,6 +40,13 @@ saveTempfile = ( req , callback ) ->
                 callback( info.path , info.fd )
 
 
+getHttpPrefix = ( req ) ->
+    
+    uri = url.parse( req.url , true ) 
+
+    "#{uri.protocol}//#{uri.hostname}" + ( if uri.port then ":#{uri.port}" else "" ) + "/"
+
+
 startApp = () ->
 
     approuter = urlrouter (app) ->
@@ -55,25 +64,44 @@ startApp = () ->
 
                             wrap_output( res )
 
-###        
 
         app.get '/:pkgname' , ( req , res , next ) ->
 
-            db.find_package req.params.pkgname , ( err , pkg ) ->
+            db.find req.params.pkgname , ( err , pkg ) ->
 
                 if assert(err,res) then return
 
-                wrap_output( res , pkg )
-
+                wrap_output( res , new Entity( pkg , getHttpPrefix(req) ).getAllPackage() )
 
 
         app.get '/:pkgname/:version' , ( req , res , next ) ->
 
+            db.find req.params.pkgname , ( err , pkg ) ->
+
+                if assert(err,res) then return
+
+                wrap_output( res , new Entity( pkg , getHttpPrefix(req) ).getPackage( req.params.version ) )
+
+
+
         app.get '/:pkgname/lasest' , ( req , res , next ) ->
+
+            db.find req.params.pkgname , ( err , pkg ) ->
+
+                if assert(err,res) then return
+
+                wrap_output( res , new Entity( pkg , getHttpPrefix(req) ).getLasestPackage() )
+
 
         app.get '/:package/:version/-/:tarname' , ( req , res , next ) ->
 
-        ###
+            db.find_tar req.params.pkgname , req.params.tarname , ( err , info , data ) ->
+
+                if assert(err,res) then return                
+
+                res.writeHead 200 , { 'Content-Type' : info.content_type , 'Content-Length' : info.length }
+                res.end data
+
 
 
     app = connect()

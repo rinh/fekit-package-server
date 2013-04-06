@@ -51,6 +51,15 @@ exports.find = find = ( name , cb ) ->
             cb( err , body )
 
 
+exports.find_tar = find_tar = ( name , tarfilename , cb ) ->
+
+    initdb ( err , db ) ->
+
+        if err then return cb(err)
+
+        db.attachment.get name , tarfilename , cb
+
+
 exports.save = save = ( config , zipfilepath , cb ) ->
 
     _id = config.name

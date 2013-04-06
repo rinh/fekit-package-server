@@ -12,7 +12,8 @@
     "chai":"*",
     "fstream":"*",
     "semver":"*",
-    "async":"*"
+    "async":"*",
+    "underscore":"*"
   },
   "description": "",
   "main": "index.js",
