@@ -2,14 +2,13 @@ _ = require 'underscore'
 
 class Entity
 
-    initialize : ( @jsonData , @http_prefix ) ->
-
+    constructor : ( @jsonData , @http_prefix ) ->
 
     getAllPackage : () ->
 
         vers = {}
 
-        dist = getLasestPackage()
+        dist = @getLatestPackage()
 
         for ver of @jsonData.versions
             vers[ver] = @getPackage( ver )
@@ -17,16 +16,15 @@ class Entity
         obj = 
             name: @jsonData.name
             'dist-tags': 
-                lasest: dist.version
+                latest: dist.version
                 tarball: dist.dist.tarball
             versions: vers
             description: @jsonData.description
 
         return obj
 
-    getLasestPackage : () ->
-
-        return @getPackage( @jsonData['dist-tags']['lasest'] )
+    getLatestPackage : () ->
+        return @getPackage( @jsonData['dist-tags']['latest'] )
     
     getPackage : ( ver ) ->
 
@@ -41,4 +39,5 @@ class Entity
 
 
     
-module.exports = Entity
+exports.Entity = ( data , http_prefix ) ->
+    return new Entity( data , http_prefix )

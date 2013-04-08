@@ -4,11 +4,12 @@ request = require "request"
 http = require "http"
 connect = require "connect"
 urlrouter = require "urlrouter"
-url = require("url")
+formidable = require "formidable"
+url = require "url"
 
 readPackage = require "./read_package"
 db = require "./db"
-Entity = require "./entity"
+Entity = require("./entity").Entity
 
 
 wrap_output = ( res , json ) ->
@@ -28,16 +29,13 @@ assert = ( err , res ) ->
     return false
 
 
-saveTempfile = ( req , callback ) ->
-    data = ''
-    res.on 'data' , ( chunk ) ->
-        data += chunk
-    res.on 'end' , () ->
-        temp.open 'fekit-pkg-' , ( err , info ) ->
-            if err then return callback(err)
-            fs.writeFile info.path , data , 'binary' , (err) ->
-                if err then return callback(err)
-                callback( info.path , info.fd )
+saveTempfile = ( req , res , callback ) ->
+    
+    form = new formidable.IncomingForm()
+
+    form.parse req , ( err , fields , files ) ->
+
+        callback( err , files.file.path )
 
 
 getHttpPrefix = ( req ) ->
@@ -47,50 +45,47 @@ getHttpPrefix = ( req ) ->
     "#{uri.protocol}//#{uri.hostname}" + ( if uri.port then ":#{uri.port}" else "" ) + "/"
 
 
-startApp = () ->
+###
+    options.test 是否开启测试
+###
+startApp = ( port , options ) ->
+
+    db.test = options.test
+
+    port = port || 3300
 
     approuter = urlrouter (app) ->
 
+        app.get '/hello' , ( req , res , next ) ->
+
+            res.end('hello , fekit package server.')
+
+
         app.put '/:pkgname' , ( req , res , next ) ->
-    
-            saveTempfile req , ( err , path , filedesc ) ->
+
+            saveTempfile req , res , ( err , path  ) ->
                 if assert(err,res) then return
-                
+
                 readPackage path , ( err , pkgconfig , tmpfile ) ->
                     if assert(err,res) then return
 
-                        db.save pkgconfig , tmpfile , ( err ) ->
-                            if assert(err,res) then return
+                    db.save pkgconfig , tmpfile , ( err ) ->
+                        if assert(err,res) then return
 
-                            wrap_output( res )
-
-
-        app.get '/:pkgname' , ( req , res , next ) ->
-
-            db.find req.params.pkgname , ( err , pkg ) ->
-
-                if assert(err,res) then return
-
-                wrap_output( res , new Entity( pkg , getHttpPrefix(req) ).getAllPackage() )
+                        wrap_output( res )
 
 
-        app.get '/:pkgname/:version' , ( req , res , next ) ->
+        app.get '/:pkgname/latest' , ( req , res , next ) ->
 
             db.find req.params.pkgname , ( err , pkg ) ->
 
                 if assert(err,res) then return
 
-                wrap_output( res , new Entity( pkg , getHttpPrefix(req) ).getPackage( req.params.version ) )
-
-
-
-        app.get '/:pkgname/lasest' , ( req , res , next ) ->
-
-            db.find req.params.pkgname , ( err , pkg ) ->
+                err = if !pkg then "not found #{req.params.pkgname} package." else null
 
                 if assert(err,res) then return
 
-                wrap_output( res , new Entity( pkg , getHttpPrefix(req) ).getLasestPackage() )
+                wrap_output( res , Entity( pkg , getHttpPrefix(req) ).getLatestPackage() )
 
 
         app.get '/:package/:version/-/:tarname' , ( req , res , next ) ->
@@ -103,6 +98,32 @@ startApp = () ->
                 res.end data
 
 
+        app.get '/:pkgname/:version' , ( req , res , next ) ->
+
+            db.find req.params.pkgname , ( err , pkg ) ->
+
+                if assert(err,res) then return
+
+                err = if !pkg then "not found #{req.params.pkgname} package." else null
+
+                if assert(err,res) then return
+
+                wrap_output( res , new Entity( pkg , getHttpPrefix(req) ).getPackage( req.params.version ) )
+
+
+        app.get '/:pkgname' , ( req , res , next ) ->
+
+            db.find req.params.pkgname , ( err , pkg ) ->
+
+                if assert(err,res) then return
+
+                err = if !pkg then "not found #{req.params.pkgname} package." else null
+
+                if assert(err,res) then return
+
+                wrap_output( res , new Entity( pkg , getHttpPrefix(req) ).getAllPackage() )
+
+
 
     app = connect()
             .use( connect.logger( 'tiny' ) ) 
@@ -111,7 +132,7 @@ startApp = () ->
             .use( connect.query()  ) 
 
 
-    listenPort( http.createServer(app) , 3300 )
+    listenPort( http.createServer(app) , port )
 
 
 #-----------------
@@ -130,5 +151,4 @@ listenPort = ( server, port ) ->
 
     server.listen( port )
 
-
-startApp()
+exports.startApp = startApp

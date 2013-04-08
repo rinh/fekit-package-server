@@ -13,7 +13,9 @@
     "fstream":"*",
     "semver":"*",
     "async":"*",
-    "underscore":"*"
+    "underscore":"*",
+    "request":"*",
+    "formidable":"*"
   },
   "description": "",
   "main": "index.js",

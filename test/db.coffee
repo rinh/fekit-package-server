@@ -3,6 +3,8 @@ db = require "../src/db"
 path = require "path"
 assert = require('chai').assert
 
+db.test = true
+
 mockTar = path.join( path.dirname(__filename) , "db" , "datepicker.tgz" )
 mockConfig = ( ver ) ->
     {
@@ -18,14 +20,14 @@ describe '#update_model , check update version' , ->
 
     it 'empty' , () ->
         m = db.update_model( null , mockConfig() )
-        assert.equal m['dist-tags']['lasest'] , '0.0.1'
+        assert.equal m['dist-tags']['latest'] , '0.0.1'
         assert.ok m.versions['0.0.1'] isnt null
 
     it 'push a greater version' , () ->
         m = () ->
             db.update_model( {
                 'dist-tags' : {
-                    lasest: '0.0.2'
+                    latest: '0.0.2'
                 }
             } , mockConfig() )
         assert.throw m 
@@ -33,10 +35,10 @@ describe '#update_model , check update version' , ->
     it 'push a lessthan version' , () ->
         m = db.update_model( {
                 'dist-tags' : {
-                    lasest: '0.0.2'
+                    latest: '0.0.2'
                 }
             } , mockConfig('0.0.3') )
-        assert.equal m['dist-tags']['lasest'] , '0.0.3'
+        assert.equal m['dist-tags']['latest'] , '0.0.3'
         assert.ok m.versions['0.0.3'] isnt null
 
 
