@@ -17,6 +17,10 @@
     "request":"*",
     "formidable":"*"
   },
+  "scripts":{
+    "start":"./node_modules/.bin/coffee src/cli.coffee",
+    "test":"./node_modules/.bin/cake test"
+  },
   "description": "",
   "main": "index.js",
   "repository": "",

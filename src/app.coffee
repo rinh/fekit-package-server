@@ -50,7 +50,7 @@ getHttpPrefix = ( req ) ->
 ###
 startApp = ( port , options ) ->
 
-    db.test = options.test
+    db.test = options && options.test
 
     port = port || 3300
 
