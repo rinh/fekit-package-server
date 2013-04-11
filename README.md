@@ -4,7 +4,7 @@ fekit package server
 ## how to install  ##
     
     install CouchDB
-    npm install fekit-package-server
+    git clone https://github.com/rinh/fekit-package-server
 
 ## how to run
 
