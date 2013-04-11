@@ -34,6 +34,7 @@ class Entity
             dist:
                 tarball: "#{@http_prefix}#{@jsonData.name}/#{ver}/-/#{@jsonData}-#{ver}.tgz"
             description: @jsonData.description
+            config: @jsonData
 
         return obj
 
