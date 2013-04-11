@@ -88,7 +88,7 @@ startApp = ( port , options ) ->
                 wrap_output( res , Entity( pkg , getHttpPrefix(req) ).getLatestPackage() )
 
 
-        app.get '/:package/:version/-/:tarname' , ( req , res , next ) ->
+        app.get '/:package/-/:tarname' , ( req , res , next ) ->
 
             db.find_tar req.params.pkgname , req.params.tarname , ( err , info , data ) ->
 
