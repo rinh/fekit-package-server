@@ -40,9 +40,7 @@ saveTempfile = ( req , res , callback ) ->
 
 getHttpPrefix = ( req ) ->
     
-    uri = url.parse( req.url , true ) 
-
-    "#{uri.protocol}//#{uri.hostname}" + ( if uri.port then ":#{uri.port}" else "" ) + "/"
+    "http://#{req.headers['host']}/"
 
 
 ###
@@ -88,14 +86,21 @@ startApp = ( port , options ) ->
                 wrap_output( res , Entity( pkg , getHttpPrefix(req) ).getLatestPackage() )
 
 
-        app.get '/:package/-/:tarname' , ( req , res , next ) ->
+        app.get '/:pkgname/-/:tarname' , ( req , res , next ) ->
 
-            db.find_tar req.params.pkgname , req.params.tarname , ( err , info , data ) ->
+            db.find_tar req.params.pkgname , req.params.tarname , ( err , data ) ->
 
-                if assert(err,res) then return                
+                if err 
+                    res.writeHead 404
+                    res.end()
+                    return
 
-                res.writeHead 200 , { 'Content-Type' : info.content_type , 'Content-Length' : info.length }
-                res.end data
+                res.writeHead 200 , 
+                    'Content-Type' : 'text/plain'
+                    
+                res.write data
+                res.end()
+
 
 
         app.get '/:pkgname/:version' , ( req , res , next ) ->

@@ -1,3 +1,4 @@
+temp = require 'temp'
 async = require 'async'
 path = require 'path'
 fs = require 'fs'
@@ -12,6 +13,10 @@ PORT = 3300
 
 GET_TEST_FILE = ( name ) ->
     path.join path.dirname(__filename) , 'app' , name
+
+GETS = ( path , opts , cb ) ->
+    opts.url = "http://127.0.0.1:#{PORT}#{path}"
+    request opts , cb
 
 GET = ( path , cb ) ->
     request.get "http://127.0.0.1:#{PORT}#{path}" , ( err , res , body ) ->
@@ -108,4 +113,39 @@ describe 'app' , ->
         db.clearDB done
 
 
+
+describe 'app' , ->
+
+    before ( done ) ->
+        a = ( ok ) ->
+            db.clearDB ok
+        b = ( ok ) ->
+            PUT '/datepicker' , GET_TEST_FILE('datepicker-0.0.1.tgz') , () ->
+                ok()
+        c = ( ok ) ->
+            PUT '/datepicker' , GET_TEST_FILE('datepicker-0.0.2.tgz') , () ->
+                ok()
+        async.series [a,b,c] , () ->
+            done()
+
+
+    it '#get /:pkgname/-/:tarname' , ( done ) ->
+        GETS '/datepicker/-/xxxxx' , {} , ( err , res , body ) ->
+            assert.equal res.statusCode , 404
+            done()
+
+    it '#get /:pkgname/-/:tarname' , ( done ) ->
+
+        p = temp.path()
+        stream = fs.createWriteStream( p )
+ 
+        GETS '/datepicker/-/datepicker-0.0.2.tgz' , { encoding: null } , ( err , res , body ) ->
+            assert.equal res.statusCode , 200
+            assert.equal body[0] , 0x1f
+            assert.equal body[1] , 0x8b
+            done()
+
+
+    after ( done ) ->
+        db.clearDB done
 

@@ -32,9 +32,9 @@ class Entity
             name: @jsonData.name
             version: ver
             dist:
-                tarball: "#{@http_prefix}#{@jsonData.name}/-/#{@jsonData}-#{ver}.tgz"
+                tarball: "#{@http_prefix}#{@jsonData.name}/-/#{@jsonData.name}-#{ver}.tgz"
             description: @jsonData.description
-            config: @jsonData
+            config: @jsonData.versions[ver]
 
         return obj
 
