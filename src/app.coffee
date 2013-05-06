@@ -129,6 +129,25 @@ startApp = ( port , options ) ->
                 wrap_output( res , new Entity( pkg , getHttpPrefix(req) ).getAllPackage() )
 
 
+        app.delete '/:pkgname/:version' , ( req , res , next ) ->
+
+            db.delete req.params.pkgname , req.params.version , ( err , pkg ) ->
+
+                if assert(err,res) then return
+
+                wrap_output( res )
+
+
+        app.delete '/:pkgname/' , ( req , res , next ) ->
+
+            db.delete req.params.pkgname , null , ( err , pkg ) ->
+
+                if assert(err,res) then return
+
+                wrap_output( res )
+
+
+
 
     app = connect()
             .use( connect.logger( 'tiny' ) ) 

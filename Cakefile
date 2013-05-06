@@ -14,7 +14,9 @@ build = (option,callback) ->
     process_stdio coffee , callback
 
 test = () ->
-    mocha = spawn './node_modules/.bin/mocha' , [ '--colors', '--recursive', '--compilers', 'coffee:coffee-script' ]
+    m = [ '--colors', '--recursive', '--compilers', 'coffee:coffee-script' ]
+    console.info './node_modules/.bin/mocha' , m.join(' ')
+    mocha = spawn './node_modules/.bin/mocha' , m
     process_stdio mocha
 
 

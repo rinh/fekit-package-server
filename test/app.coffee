@@ -14,6 +14,11 @@ PORT = 3300
 GET_TEST_FILE = ( name ) ->
     path.join path.dirname(__filename) , 'app' , name
 
+DELETE = ( path , opts , cb ) ->
+    opts.url = "http://127.0.0.1:#{PORT}#{path}"
+    opts.method = 'DELETE'
+    request opts , cb
+
 GETS = ( path , opts , cb ) ->
     opts.url = "http://127.0.0.1:#{PORT}#{path}"
     request opts , cb
@@ -148,4 +153,38 @@ describe 'app' , ->
 
     after ( done ) ->
         db.clearDB done
+
+
+
+describe 'app' , ->
+
+    before ( done ) ->
+        a = ( ok ) ->
+            db.clearDB ok
+        b = ( ok ) ->
+            PUT '/datepicker' , GET_TEST_FILE('datepicker-0.0.1.tgz') , () ->
+                ok()
+        c = ( ok ) ->
+            PUT '/datepicker' , GET_TEST_FILE('datepicker-0.0.2.tgz') , () ->
+                ok()
+        async.series [a,b,c] , () ->
+            done()
+
+
+    it '#delete /:pkgname/:version' , ( done ) ->
+        DELETE '/datepicker/0.0.3' , {} , ( err , res , body ) ->
+            assert.equal res.statusCode , 200
+            assert.equal JSON.parse(body).ret , false 
+            done()
+
+    it '#delete /:pkgname/:version' , ( done ) ->
+        DELETE '/datepicker/0.0.2' , {} , ( err , res , body ) ->
+            assert.equal res.statusCode , 200
+            assert.equal JSON.parse(body).ret , true 
+            done()
+
+    after ( done ) ->
+        db.clearDB done
+
+
 

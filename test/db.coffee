@@ -100,6 +100,45 @@ describe 'db' , ->
         db.clearDB done
 
 
+describe 'db' , ->
+
+    before ( done ) ->
+
+        clr = ( ok ) ->
+            db.clearDB ok
+
+        a = ( ok ) ->
+            db.save mockConfig('0.0.1') , mockTar , ok
+
+        b = ( ok ) ->
+            db.save mockConfig('0.0.2') , mockTar , ok
+
+        async.series [clr,a,b] , () ->
+            done()
+
+    it '#delete() empty should be right.' , (done) ->
+
+        db.delete 'datepicker' , '0.0.3' , ( err , doc ) ->
+
+            assert.notEqual err , null
+
+            done()
+
+    it '#delete() should be right.' , (done) ->
+
+        db.delete 'datepicker' , '0.0.2' , ( err , doc ) ->
+            assert.equal err , null 
+
+            db.delete 'datepicker' , '0.0.1', ( err , doc ) ->  
+                assert.equal err , null 
+            
+                done()
+
+
+    after ( done ) ->
+        db.clearDB done
+
+
 
 
 

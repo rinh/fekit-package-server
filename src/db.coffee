@@ -1,3 +1,4 @@
+_ = require 'underscore'
 path = require 'path'
 fs = require 'fs'
 nano = require('nano')('http://127.0.0.1:5984')
@@ -39,6 +40,27 @@ exports.update_model = update_model = ( original , config ) ->
         original['dist-tags']['latest'] = ver
         if !original.versions then original.versions = {}
         original.versions[ver] = config
+
+    return original
+
+
+exports.delete_model = delete_model = ( original , pkgname , version ) ->
+
+    throw "没有找到 #{pkgname}, 请确认是否发布到源中。" if !original
+
+    throw "没有找到 #{pkgname}@#{version} " if !original.versions[version]
+
+    delete original.versions[version]
+
+    vers = _.keys( original.versions ) 
+
+    return null if vers.length is 0 
+
+    high_ver = semver.maxSatisfying( vers )
+
+    throw "找不到最高版本" if !high_ver
+
+    original['dist-tags']['latest'] = high_ver
 
     return original
 
@@ -96,4 +118,45 @@ exports.save = save = ( config , zipfilepath , cb ) ->
                     db.attachment.insert _id , filename , data , 'application/octet-stream' , { rev : saved_body.rev } , ( err , doc ) ->
 
                         cb( err , doc )
+
+
+exports.delete = deleteEntity = ( pkgname , version , cb ) ->
+
+    _id = pkgname 
+
+    initdb (err, db) ->
+
+        if err then return cb(err)
+
+        find _id , ( err , body ) ->
+
+            if err and err.status_code isnt 404 then return cb(err)
+            if err and err.status_code is 404 then return cb("没有找到 #{pkgname}, 请确认是否发布到源中。")
+
+            try 
+                if version 
+                    model = delete_model( body , pkgname , version ) 
+                else 
+                    model = null
+            catch err 
+                return cb( err )
+
+            if model 
+
+                db.insert model , _id , ( err , deleted_body ) ->
+
+                    if err then return cb(err)
+
+                    filename = "#{_id}-#{version}.tgz"
+
+                    db.attachment.destroy _id , filename , deleted_body.rev , ( err , doc ) ->
+
+                        cb( err , doc )
+
+            else 
+
+                db.destroy _id , body._rev , ( err , doc ) ->
+
+                    cb( err , doc ) 
+
 
