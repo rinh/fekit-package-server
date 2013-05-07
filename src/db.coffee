@@ -160,3 +160,21 @@ exports.delete = deleteEntity = ( pkgname , version , cb ) ->
                     cb( err , doc ) 
 
 
+exports.search = search = ( keyword = '' , cb ) ->
+
+    initdb ( err , db ) ->
+
+        if err then return cb( err )
+
+        db.list ( err, body ) ->
+
+            if err then return cb( err )
+
+            if keyword
+                list = ( obj.id for obj in body.rows when ~obj.id.indexOf(keyword) )
+            else 
+                list = ( obj.id for obj in body.rows )
+
+            cb( null , list )
+
+

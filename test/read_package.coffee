@@ -15,6 +15,7 @@ describe 'test1', ->
     it 'is right tgz', (done) ->
         fp = getpath('test1.tgz')
         open 'test1.tgz' , ( err , config , tempfile ) ->
+            assert.equal err , null
             assert.equal config.name , "test1"
             done()
 
@@ -22,13 +23,13 @@ describe 'test1', ->
 describe 'test2', ->
     it 'is invalid json string', (done) ->
         open 'test2.tgz' , ( err , config , tempfile ) ->
-            assert.equal err.toString() , "'fekit.config' is invalid json string."
+            assert.notEqual err , null
             done()
 
 describe 'test3', ->
     it 'fekit.config not found ', (done) ->
         open 'test3.tgz' , ( err , config , tempfile ) ->
-            assert.equal err.toString() , "'fekit.config' file not found in package."
+            assert.notEqual err , null
             done()
 
 describe 'test4', ->

@@ -59,6 +59,15 @@ startApp = ( port , options ) ->
             res.end('hello , fekit package server.')
 
 
+        app.get '/search/:keyword' , ( req , res , next ) ->
+
+            db.search req.params.keyword , ( err , list ) ->
+
+                if assert(err,res) then return
+
+                wrap_output( res , list )
+
+
         app.put '/:pkgname' , ( req , res , next ) ->
 
             saveTempfile req , res , ( err , path  ) ->

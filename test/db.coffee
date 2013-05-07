@@ -141,6 +141,60 @@ describe 'db' , ->
 
 
 
+describe 'db' , ->
+
+    before ( done ) ->
+
+        clr = ( ok ) ->
+            db.clearDB ok
+
+        a = ( ok ) ->
+            db.save mockConfig('0.0.1') , mockTar , ok
+
+        b = ( ok ) ->
+            db.save mockConfig('0.0.2') , mockTar , ok
+
+        async.series [clr,a,b] , () ->
+            done()
+
+    it '#search() should be right.' , (done) ->
+
+        db.search 'date' , ( err , list ) ->
+
+            assert.equal err , null
+
+            assert.equal list.length , 1
+
+            done()
+
+    it '#search() should be right.' , (done) ->
+
+        db.search '' , ( err , list ) ->
+
+            assert.equal err , null
+
+            assert.equal list.length , 1
+
+            done()
+
+
+    it '#search() should be right.' , (done) ->
+
+        db.search 'xx' , ( err , list ) ->
+
+            assert.equal err , null
+
+            assert.equal list.length , 0
+
+            done()
+
+
+    after ( done ) ->
+        db.clearDB done
+
+
+
+
 
 
 
