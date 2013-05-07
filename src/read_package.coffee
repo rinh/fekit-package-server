@@ -24,6 +24,7 @@ readPackage = ( path , callback ) ->
     
     dir = "#{path}_extract/"
     conf_path = "#{dir}fekit.config"
+    readme_path = "#{dir}README.md"
 
     checkGzipFormat path , (err) ->
 
@@ -39,17 +40,29 @@ readPackage = ( path , callback ) ->
                 json = JSON.parse(conf_str)
 
                 if !json.name 
-                    return callback("'fekit.config' hasn't name field.")
+                    return callback("'fekit.config' 没有 name 字段.")
 
                 if !json.version 
-                    return callback("'fekit.config' hasn't version field.")
+                    return callback("'fekit.config' 没有 version 字段.")
 
                 if !semver.valid( json.version )
-                    return callback("'fekit.config' version invalid.")
+                    return callback("'fekit.config' version 不正确.")
+
+                if !json.author
+                    return callback("'fekit.config' 没有 author 字段.")
+
+                if !json.email
+                    return callback("'fekit.config' 没有 email 字段.")
+
+                if !json.description
+                    return callback("'fekit.config' 没有 description 字段.")
+
+                unless fs.existsSync( readme_path )
+                    return callback("请在发布内容中包含 README.md 文件")
 
                 callback( null , json , path )
             catch err
-                return callback("'fekit.config' is invalid json string.")
+                return callback("'fekit.config' 不是正确的 json 格式.")
 
 
 module.exports = readPackage
