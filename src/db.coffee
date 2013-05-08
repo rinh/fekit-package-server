@@ -11,8 +11,31 @@ get_db_name = () ->
 
 initdb = ( cb ) ->
     nano.db.create get_db_name() , ( err , body ) ->
+        is_new_db = !err
         db = nano.db.use get_db_name()
-        cb( null , db )
+        if is_new_db 
+            _initdb db , () ->
+                cb( null , db )
+        else 
+            cb( null , db )
+
+_initdb = ( db , cb ) ->
+    # 添加 view
+    _map = (doc) ->
+        emit( null , {
+                name : doc.name 
+                version : doc['dist-tags']['latest']
+                description : doc.description
+            })
+
+    content = 
+        language : 'javascript' 
+        views : 
+            rows : 
+                map : _map.toString()
+
+    db.insert content , '_design/packages' , cb 
+
 
 exports.clearDB = ( cb ) ->
     nano.db.destroy get_db_name() , ( err ) ->
@@ -166,15 +189,15 @@ exports.search = search = ( keyword = '' , cb ) ->
 
         if err then return cb( err )
 
-        db.list ( err, body ) ->
+        db.view 'packages' , 'rows' , ( err , body ) ->
 
             if err then return cb( err )
 
             if keyword
-                list = ( obj.id for obj in body.rows when ~obj.id.indexOf(keyword) )
+                list = ( obj.value for obj in body.rows when ~obj.id.indexOf(keyword) )
             else 
-                list = ( obj.id for obj in body.rows )
+                list = ( obj.value for obj in body.rows )
 
             cb( null , list )
 
-
+    

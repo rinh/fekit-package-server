@@ -165,6 +165,10 @@ describe 'db' , ->
 
             assert.equal list.length , 1
 
+            assert.equal list[0].name , 'datepicker'
+
+            assert.equal list[0].version , '0.0.2'
+
             done()
 
     it '#search() should be right.' , (done) ->
