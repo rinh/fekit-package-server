@@ -58,6 +58,13 @@ startApp = ( port , options ) ->
 
             res.end('hello , fekit package server.')
 
+        app.get '/search/' , ( req , res , next ) ->
+
+            db.search null , ( err , list ) ->
+
+                if assert(err,res) then return
+
+                wrap_output( res , list )
 
         app.get '/search/:keyword' , ( req , res , next ) ->
 
