@@ -73,8 +73,10 @@ startApp = ( port , options ) ->
             saveTempfile req , res , ( err , path  ) ->
                 if assert(err,res) then return
 
-                readPackage path , ( err , pkgconfig , tmpfile ) ->
+                readPackage path , ( err , pkgconfig , tmpfile , readmeContent ) ->
                     if assert(err,res) then return
+
+                    pkgconfig.README = readmeContent
 
                     db.save pkgconfig , tmpfile , ( err ) ->
                         if assert(err,res) then return

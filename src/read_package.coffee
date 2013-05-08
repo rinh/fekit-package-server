@@ -62,7 +62,7 @@ readPackage = ( path , callback ) ->
             unless fs.existsSync( readme_path )
                 return callback("请在发布内容中包含 README.md 文件")
 
-            callback( null , json , path )
+            callback( null , json , path , fs.readFileSync(readme_path).toString() )
 
 
 module.exports = readPackage
