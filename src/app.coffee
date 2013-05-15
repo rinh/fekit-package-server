@@ -89,8 +89,7 @@ startApp = ( port , options ) ->
                     db.save pkgconfig , tmpfile , ( err ) ->
                         if assert(err,res) then return
 
-                        # 生成 doc 
-                        docs.output = "/home/q/www/docs"
+                        # 生成 doc ，默认位置
                         docs.createDoc pkgconfig.name , pkgconfig.version , ( err ) ->
 
                             if assert(err,res) then return
