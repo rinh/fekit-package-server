@@ -90,6 +90,7 @@ startApp = ( port , options ) ->
                         if assert(err,res) then return
 
                         # 生成 doc 
+                        docs.output = "/home/q/www/docs"
                         docs.createDoc pkgconfig.name , pkgconfig.version , ( err ) ->
 
                             if assert(err,res) then return
