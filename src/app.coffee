@@ -6,6 +6,7 @@ connect = require "connect"
 urlrouter = require "urlrouter"
 formidable = require "formidable"
 url = require "url"
+docs = require "fekit-package-docs"
 
 readPackage = require "./read_package"
 db = require "./db"
@@ -88,7 +89,12 @@ startApp = ( port , options ) ->
                     db.save pkgconfig , tmpfile , ( err ) ->
                         if assert(err,res) then return
 
-                        wrap_output( res )
+                        # 生成 doc 
+                        docs.createDoc pkgconfig.name , pkgconfig.version , ( err ) ->
+
+                            if assert(err,res) then return
+
+                            wrap_output( res )
 
 
         app.get '/:pkgname/latest' , ( req , res , next ) ->

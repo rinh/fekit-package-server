@@ -15,7 +15,8 @@
     "async":"*",
     "underscore":"*",
     "request":"*",
-    "formidable":"*"
+    "formidable":"*",
+    "fekit-package-docs":"*"
   },
   "scripts":{
     "start":"./node_modules/.bin/coffee src/cli.coffee",
