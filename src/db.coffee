@@ -63,6 +63,7 @@ exports.update_model = update_model = ( original , config ) ->
         original['dist-tags']['latest'] = ver
         if !original.versions then original.versions = {}
         original.versions[ver] = config
+        original.description = config.description
 
     return original
 
