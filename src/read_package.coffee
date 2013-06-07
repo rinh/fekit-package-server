@@ -44,6 +44,9 @@ readPackage = ( path , callback ) ->
             if !json.name 
                 return callback("'fekit.config' 没有 name 字段.")
 
+            if !/^[a-z0-9\_\-]+$/i.test(json.name)
+                return callback("'fekit.config' 中的 name 只能使用 字母 / 数字 / - 及 _ ")
+
             if !json.version 
                 return callback("'fekit.config' 没有 version 字段.")
 
