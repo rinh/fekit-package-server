@@ -195,7 +195,7 @@ exports.search = search = ( keyword = '' , cb ) ->
             if err then return cb( err )
 
             if keyword
-                list = ( obj.value for obj in body.rows when ~obj.id.indexOf(keyword) )
+                list = ( obj.value for obj in body.rows when ~obj.id.indexOf(keyword) or ~obj.description.indexOf(keyword) )
             else 
                 list = ( obj.value for obj in body.rows )
 
