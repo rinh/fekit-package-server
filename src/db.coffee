@@ -25,7 +25,8 @@ _initdb = ( db , cb ) ->
         emit( null , {
                 name : doc.name 
                 version : doc['dist-tags']['latest']
-                description : doc.description
+                description : doc.description 
+                tags : doc.tags || []
             })
 
     content = 
@@ -34,8 +35,18 @@ _initdb = ( db , cb ) ->
             rows : 
                 map : _map.toString()
 
-    db.insert content , '_design/packages' , cb 
+    _id = '_design/packages'
 
+    find _id , ( err , body ) ->
+        db.destroy _id , body._rev , ( err , doc ) ->
+            db.insert content , _id , cb 
+
+
+exports.init_design = () ->
+
+    initdb (err,db) ->
+        _initdb db , ( err ) ->
+            console.info('init design done.' + err )
 
 exports.clearDB = ( cb ) ->
     nano.db.destroy get_db_name() , ( err ) ->
@@ -62,6 +73,7 @@ exports.update_model = update_model = ( original , config ) ->
     else 
         original['dist-tags']['latest'] = ver
         if !original.versions then original.versions = {}
+        # 以下全部使用最新版本的配置节
         original.versions[ver] = config
         original.description = config.description
 
@@ -100,6 +112,25 @@ exports.find = find = ( name , cb ) ->
             #if err and err.status_code is 404 then return cb( null , null )
             if err and err.status_code is 200 then return cb( null , body )
             cb( err , body )
+
+
+exports.update_tags = update_tags = ( name , tags , cb ) ->
+    
+    _id = name
+
+    initdb ( err,db ) ->
+
+        if err then return cb(err)
+
+        find _id , ( err , body ) ->
+
+            if err and err.status_code isnt 404 then return cb(err)
+
+            body.tags = tags
+
+            db.insert body , _id , ( err , saved_body ) ->
+
+                cb( err , saved_body )
 
 
 exports.find_tar = find_tar = ( name , tarfilename , cb ) ->

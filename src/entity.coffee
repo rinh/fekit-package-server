@@ -20,6 +20,7 @@ class Entity
                 tarball: dist.dist.tarball
             versions: vers
             description: @jsonData.description
+            tags: @jsonData.tags || []
 
         return obj
 
@@ -35,6 +36,7 @@ class Entity
                 tarball: "#{@http_prefix}#{@jsonData.name}/-/#{@jsonData.name}-#{ver}.tgz"
             description: @jsonData.description
             config: @jsonData.versions[ver]
+            tags: @jsonData.tags || []
 
         return obj
 

@@ -6,6 +6,7 @@ connect = require "connect"
 urlrouter = require "urlrouter"
 formidable = require "formidable"
 url = require "url"
+qs = require "querystring"
 #docs = require "fekit-package-docs"
 
 readPackage = require "./read_package"
@@ -75,6 +76,18 @@ startApp = ( port , options ) ->
 
                 wrap_output( res , list )
 
+        app.get '/update_tags/:name' , ( req , res , next ) ->
+
+            _url = url.parse( req.url )
+            params = qs.parse( _url.query )
+
+            tags = if params.tags then params.tags.split(",") else []
+
+            db.update_tags req.params.name , tags , ( err , doc ) ->
+
+                if assert(err,res) then return
+
+                wrap_output( res , doc )
 
         app.put '/:pkgname' , ( req , res , next ) ->
 
