@@ -1,7 +1,0 @@
-{
-    "dev": {
-        "host": "l-registry.fe.dev.cn6" ,
-        "path": "/home/q/www/fekit-package-server/" ,
-        "shell": "cd /home/q/www/fekit-package-server && sudo sh ./restart.sh"
-    }
-}
