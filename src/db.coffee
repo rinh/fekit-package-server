@@ -64,7 +64,7 @@ exports.update_model = update_model = ( original , config ) ->
                 email: config.email
             'dist-tags': {}
             versions: {}
-            tags: config.tags || []
+            #tags: config.tags || []
 
     over = original['dist-tags']['latest']
     ver = config.version
@@ -77,7 +77,7 @@ exports.update_model = update_model = ( original , config ) ->
         # 以下全部使用最新版本的配置节
         original.versions[ver] = config
         original.description = config.description
-        original.tags = config.tags || original.tags || []
+        #original.tags = config.tags || original.tags || []
 
     return original
 
@@ -248,5 +248,3 @@ exports.search = search = ( keyword = '' , cb ) ->
                 list = ( obj.value for obj in body.rows )
 
             cb( null , list )
-
-    
