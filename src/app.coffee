@@ -76,6 +76,15 @@ startApp = ( port , options ) ->
 
                 wrap_output( res , list )
 
+        app.get '/search_tag/:keyword' , ( req , res , next ) ->
+
+            db.search_tag req.params.keyword , ( err , list ) ->
+
+                if assert(err,res) then return
+
+                wrap_output( res , list )
+
+
         app.get '/update_tags/:name' , ( req , res , next ) ->
 
             _url = url.parse( req.url )

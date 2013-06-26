@@ -64,6 +64,7 @@ exports.update_model = update_model = ( original , config ) ->
                 email: config.email
             'dist-tags': {}
             versions: {}
+            tags: config.tags || []
 
     over = original['dist-tags']['latest']
     ver = config.version
@@ -76,6 +77,7 @@ exports.update_model = update_model = ( original , config ) ->
         # 以下全部使用最新版本的配置节
         original.versions[ver] = config
         original.description = config.description
+        original.tags = config.tags || original.tags || []
 
     return original
 
@@ -213,6 +215,21 @@ exports.delete = deleteEntity = ( pkgname , version , cb ) ->
                 db.destroy _id , body._rev , ( err , doc ) ->
 
                     cb( err , doc ) 
+
+
+exports.search_tag = search_tag = ( tag = '' , cb ) ->
+
+    initdb ( err , db ) ->
+
+        if err then return cb( err )
+
+        db.view 'packages' , 'rows' , ( err , body ) ->
+
+            if err then return cb( err )
+
+            list = ( obj.value for obj in body.rows when ~obj.value.tags.indexOf( tag ) )
+
+            cb( null , list )
 
 
 exports.search = search = ( keyword = '' , cb ) ->
