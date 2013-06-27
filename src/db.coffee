@@ -27,6 +27,7 @@ _initdb = ( db , cb ) ->
                 version : doc['dist-tags']['latest']
                 description : doc.description 
                 tags : doc.tags || []
+                update_time : doc.update_time || new Date(2000,1,1)
             })
 
     content = 
@@ -78,6 +79,8 @@ exports.update_model = update_model = ( original , config ) ->
         original.versions[ver] = config
         original.description = config.description
         #original.tags = config.tags || original.tags || []
+
+    original.update_time = new Date()
 
     return original
 
