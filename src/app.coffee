@@ -7,7 +7,7 @@ urlrouter = require "urlrouter"
 formidable = require "formidable"
 url = require "url"
 qs = require "querystring"
-#docs = require "fekit-package-docs"
+docs = require "fekit-package-docs"
 
 readPackage = require "./read_package"
 db = require "./db"
@@ -192,6 +192,13 @@ startApp = ( port , options ) ->
 
                 wrap_output( res )
 
+        app.get '/createdoc/:pkgname/:version' , ( req , res , next ) ->
+
+            docs.createDoc req.params.pkgname , req.params.version , ( err ) ->
+
+                if assert(err,res) then return
+
+                wrap_output( res )
 
 
 
