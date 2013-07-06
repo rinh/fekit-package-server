@@ -194,7 +194,7 @@ startApp = ( port , options ) ->
 
         app.get '/createdoc/:pkgname/:version' , ( req , res , next ) ->
 
-            docs.createDoc req.params.pkgname , req.params.version , ( err ) ->
+            docs.createDoc req.params.pkgname , req.params.version , req.query.doctype , ( err ) ->
 
                 if assert(err,res) then return
 
@@ -204,9 +204,10 @@ startApp = ( port , options ) ->
 
     app = connect()
             .use( connect.logger( 'tiny' ) ) 
+            .use( connect.query()  ) 
             .use( approuter )
             .use( connect.bodyParser() ) 
-            .use( connect.query()  ) 
+            
 
 
     listenPort( http.createServer(app) , port )
