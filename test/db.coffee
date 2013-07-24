@@ -1,9 +1,10 @@
 async = require 'async'
-db = require "../src/db"
+dblib = require("../src/db")
 path = require "path"
 assert = require('chai').assert
 
-db.test = true
+dblib.test = true
+db = dblib.get('registry')
 
 mockTar = path.join( path.dirname(__filename) , "db" , "datepicker.tgz" )
 mockConfig = ( ver ) ->
@@ -195,10 +196,6 @@ describe 'db' , ->
 
     after ( done ) ->
         db.clearDB done
-
-
-
-
 
 
 

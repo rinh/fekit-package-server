@@ -3,11 +3,13 @@ async = require 'async'
 path = require 'path'
 fs = require 'fs'
 request = require 'request'
-db = require "../src/db"
+dblib = require "../src/db"
 app = require "../src/app"
 assert = require('chai').assert
 
-db.test = true
+dblib.test = true
+db = dblib.get('registry')
+userdb = dblib.get('user')
 
 PORT = 3300
 
@@ -27,11 +29,17 @@ GET = ( path , cb ) ->
     request.get "http://127.0.0.1:#{PORT}#{path}" , ( err , res , body ) ->
         cb JSON.parse(body)
 
-PUT = ( path , file , cb ) ->
+PUT_FILE = ( path , file , cb ) ->
     fs.createReadStream( file ).pipe( 
         request.put "http://127.0.0.1:#{PORT}#{path}", ( err , res , body ) ->
             cb JSON.parse(body)
     )
+
+PUT = ( path , body , cb ) ->
+    request.put "http://127.0.0.1:#{PORT}#{path}" , {
+            form : body 
+        }, ( err , res , body ) ->
+            cb err , res , body
 
 app.startApp(PORT,{
         test : true
@@ -59,14 +67,14 @@ describe 'app' , ->
 
     it '#put /:pkgname' , ( done ) ->
 
-        PUT '/datepicker' , GET_TEST_FILE('datepicker-0.0.1.tgz') , ( body ) ->
+        PUT_FILE '/datepicker' , GET_TEST_FILE('datepicker-0.0.1.tgz') , ( body ) ->
             assert.ok body.ret
             db.find 'datepicker' , (err, json) ->
                 done()
 
     it '#put /:pkgname second' , ( done ) ->
 
-        PUT '/datepicker' , GET_TEST_FILE('datepicker-0.0.2.tgz') , ( body ) ->
+        PUT_FILE '/datepicker' , GET_TEST_FILE('datepicker-0.0.2.tgz') , ( body ) ->
             assert.ok body.ret
             db.find 'datepicker' , (err, json) ->
                 done()
@@ -81,10 +89,10 @@ describe 'app' , ->
         a = ( ok ) ->
             db.clearDB ok
         b = ( ok ) ->
-            PUT '/datepicker' , GET_TEST_FILE('datepicker-0.0.1.tgz') , () ->
+            PUT_FILE '/datepicker' , GET_TEST_FILE('datepicker-0.0.1.tgz') , () ->
                 ok()
         c = ( ok ) ->
-            PUT '/datepicker' , GET_TEST_FILE('datepicker-0.0.2.tgz') , () ->
+            PUT_FILE '/datepicker' , GET_TEST_FILE('datepicker-0.0.2.tgz') , () ->
                 ok()
         async.series [a,b,c] , () ->
             done()
@@ -125,10 +133,10 @@ describe 'app' , ->
         a = ( ok ) ->
             db.clearDB ok
         b = ( ok ) ->
-            PUT '/datepicker' , GET_TEST_FILE('datepicker-0.0.1.tgz') , () ->
+            PUT_FILE '/datepicker' , GET_TEST_FILE('datepicker-0.0.1.tgz') , () ->
                 ok()
         c = ( ok ) ->
-            PUT '/datepicker' , GET_TEST_FILE('datepicker-0.0.2.tgz') , () ->
+            PUT_FILE '/datepicker' , GET_TEST_FILE('datepicker-0.0.2.tgz') , () ->
                 ok()
         async.series [a,b,c] , () ->
             done()
@@ -162,10 +170,10 @@ describe 'app' , ->
         a = ( ok ) ->
             db.clearDB ok
         b = ( ok ) ->
-            PUT '/datepicker' , GET_TEST_FILE('datepicker-0.0.1.tgz') , () ->
+            PUT_FILE '/datepicker' , GET_TEST_FILE('datepicker-0.0.1.tgz') , () ->
                 ok()
         c = ( ok ) ->
-            PUT '/datepicker' , GET_TEST_FILE('datepicker-0.0.2.tgz') , () ->
+            PUT_FILE '/datepicker' , GET_TEST_FILE('datepicker-0.0.2.tgz') , () ->
                 ok()
         async.series [a,b,c] , () ->
             done()
@@ -185,6 +193,75 @@ describe 'app' , ->
 
     after ( done ) ->
         db.clearDB done
+
+
+
+describe 'user' , ->
+
+    before ( done ) ->
+        userdb.clearDB done
+
+    it '#add' , ( done ) ->
+        PUT '/user/signup' , {
+            username : 'hao.lin'
+            password : '12345'
+        } , ( err , res , body ) ->
+            body = JSON.parse body
+            assert.equal body.ret , true
+            assert.equal body.data.name , "hao.lin"
+            done()
+
+    it '#add' , ( done ) ->
+        PUT '/user/signup' , {
+            username : 'hao.lin'
+            password : 'aaaaas'
+        } , ( err , res , body ) ->
+            body = JSON.parse body
+            assert.equal body.ret , false
+            done()
+
+    it '#signin' , ( done ) ->
+        PUT '/user/signin' , {
+            username : 'hao.lin' 
+            password : '12345'
+        } , ( err , res , body ) ->
+            body = JSON.parse body
+            console.info( body )
+            assert.equal body.ret , true 
+            assert.equal body.data.name , 'hao.lin'
+            done()
+
+    it '#signin' , ( done ) ->
+        PUT '/user/signin' , {
+            username : 'hao.lin' 
+            password : 'xxxxx'
+        } , ( err , res , body ) ->
+            body = JSON.parse body
+            assert.equal body.ret , false
+            done()
+
+    it '#changePwd' , ( done ) ->
+        PUT '/user/changePwd' , {
+            username : 'hao.lin' 
+            origin_password : '12345'
+            new_password : '67890'
+        } , ( err , res , body ) ->
+            body = JSON.parse body
+            assert.equal body.ret , true
+            done()
+
+    it '#signin' , ( done ) ->
+        PUT '/user/signin' , {
+            username : 'hao.lin' 
+            password : '67890'
+        } , ( err , res , body ) ->
+            body = JSON.parse body
+            assert.equal body.ret , true 
+            assert.equal body.data.name , 'hao.lin'
+            done()
+
+    after ( done ) ->
+        userdb.clearDB done
 
 
 

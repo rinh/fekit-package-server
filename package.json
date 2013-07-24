@@ -7,16 +7,18 @@
     "urlrouter" : "0.2.x" , 
     "coffee-script":"*",
     "mocha":"*",
-    "temp":"*",
+    "temp":"0.5.x",
     "tar.gz":"*",
     "chai":"*",
     "fstream":"*",
-    "semver":"*",
+    "semver":"1.1.4",
     "async":"*",
     "underscore":"*",
     "request":"*",
     "formidable":"*",
-    "fekit-package-docs":"*"
+    "fekit-package-docs":"*",
+    "md5": "1.0.x",
+    "passport": "0.1.x"
   },
   "scripts":{
     "start":"./node_modules/.bin/coffee src/cli.coffee",
