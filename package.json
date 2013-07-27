@@ -9,6 +9,7 @@
     "mocha":"*",
     "temp":"0.5.x",
     "tar.gz":"*",
+    "tar":"*",
     "chai":"*",
     "fstream":"*",
     "semver":"1.1.4",
@@ -16,8 +17,8 @@
     "underscore":"*",
     "request":"*",
     "formidable":"*",
-    "fekit-package-docs":"*",
     "md5": "1.0.x",
+    "findit":"*",
     "passport": "0.1.x"
   },
   "scripts":{
