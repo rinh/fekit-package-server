@@ -62,6 +62,9 @@ readPackage = ( path , callback ) ->
             if !json.description
                 return callback("'fekit.config' 没有 description 字段.")
 
+            if !json.repository
+                return callback("'fekit.config' 没有 repository 字段.")
+
             unless fs.existsSync( readme_path )
                 return callback("请在发布内容中包含 README.md 文件")
 

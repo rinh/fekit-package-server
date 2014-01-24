@@ -51,9 +51,9 @@ create = ( opts ) ->
     cb = opts.done
     type = opts.type
 
-    config = syspath.join( __dirname , "../yuidoc_files/yuidoc_config.json" )
+    config = syspath.join( __dirname , "../../yuidoc_files/yuidoc_config.json" )
 
-    themedir = syspath.join( __dirname , "../yuidoc_files/theme" )
+    themedir = syspath.join( __dirname , "../../yuidoc_files/theme" )
 
     if type is 'groc'
         cmd = "sudo groc \"#{src}/src/**/*.js\" -o \"#{output}\" "
