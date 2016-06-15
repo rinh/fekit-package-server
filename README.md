@@ -18,13 +18,11 @@ fekit 可以发布、安装、删除包。
     cd fekit-package-server
     npm install pm2 
     npm install (所有依赖组件)
+ 
+## how to run / restart
 
-## how to run
-
-    启动nginx: sudo service nginx restart
     启动couchdb: sudo service couchdb restart
-    启动server:  sudo pm2 restart fekit-package-server
-    启动www: sudo pm2 restart fekit-package-www
+    启动server:  sudo $fekit-package-server/restart.sh
 
 ## how to test ##
 
