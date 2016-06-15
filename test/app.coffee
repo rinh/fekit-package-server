@@ -31,7 +31,11 @@ GET = ( path , cb ) ->
 
 PUT_FILE = ( path , file , cb ) ->
     fs.createReadStream( file ).pipe( 
-        request.put "http://127.0.0.1:#{PORT}#{path}", ( err , res , body ) ->
+        request
+            uri: "http://127.0.0.1:#{PORT}#{path}"
+            method: "PUT"
+            multipart: ['content-type' : 'application/octet-stream']
+        , ( err , res , body ) ->
             cb JSON.parse(body)
     )
 

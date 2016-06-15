@@ -6,16 +6,25 @@ fekit package server
 fekit 可以发布、安装、删除包。 
 包是一组程序的集合，一般是组件或独立应用。任何一个标准的 fekit 项目均可以成为包。
 
+## dependencies
+
+* couchdb 1.6.1
+* pm2
+
 ## how to install  ##
     
     install CouchDB
     git clone https://github.com/rinh/fekit-package-server
     cd fekit-package-server
-    npm install
+    npm install pm2 
+    npm install (所有依赖组件)
 
 ## how to run
 
-    npm start
+    启动nginx: sudo service nginx restart
+    启动couchdb: sudo service couchdb restart
+    启动server:  sudo pm2 restart fekit-package-server
+    启动www: sudo pm2 restart fekit-package-www
 
 ## how to test ##
 

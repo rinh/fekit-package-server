@@ -2,7 +2,8 @@ md5 = require 'md5'
 _ = require 'underscore'
 syspath = require 'path'
 fs = require 'fs'
-nano = require('nano')('http://127.0.0.1:5984')
+config = require '../../config.json'
+nano = require('nano')('http://' + config.database_host + ':5984')
 
 exports.dbname = "star"
 
@@ -61,7 +62,7 @@ exports.add = ( name , username , level , cb ) ->
         } 
 
         find d.key , ( err , body ) ->
-            if err and err.status_code is 404 
+            if err and err.statusCode is 404 
                 db.insert d , d.key , ( err , saved_body ) ->
                     cb( err , d , saved_body )
             else
@@ -76,8 +77,8 @@ exports.find = find = ( name , cb ) ->
 
         db.get name , { revs_info : true } , ( err , body ) ->
 
-            #if err and err.status_code is 404 then return cb( null , null )
-            if err and err.status_code is 200 then return cb( null , body )
+            #if err and err.statusCode is 404 then return cb( null , null )
+            if err and err.statusCode is 200 then return cb( null , body )
             cb( err , body )
 
 

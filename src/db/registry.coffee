@@ -1,7 +1,8 @@
 _ = require 'underscore'
 path = require 'path'
 fs = require 'fs'
-nano = require('nano')('http://127.0.0.1:5984')
+config = require '../../config.json'
+nano = require('nano')('http://' + config.database_host + ':5984')
 semver = require 'semver'
 
 exports.dbname = "registry"
@@ -113,8 +114,8 @@ exports.find = find = ( name , cb ) ->
 
         db.get name , { revs_info : true } , ( err , body ) ->
 
-            #if err and err.status_code is 404 then return cb( null , null )
-            if err and err.status_code is 200 then return cb( null , body )
+            #if err and err.statusCode is 404 then return cb( null , null )
+            if err and err.statusCode is 200 then return cb( null , body )
             cb( err , body )
 
 
@@ -128,7 +129,7 @@ exports.update_tags = update_tags = ( name , tags , cb ) ->
 
         find _id , ( err , body ) ->
 
-            if err and err.status_code isnt 404 then return cb(err)
+            if err and err.statusCode isnt 404 then return cb(err)
 
             body.tags = tags
 
@@ -153,11 +154,11 @@ exports.save = save = ( config , zipfilepath , cb ) ->
 
     initdb (err, db) ->
 
-        if err then return cb(err)        
+        if err then return cb(err)     
 
         find _id , ( err , body ) ->
 
-            if err and err.status_code isnt 404 then return cb(err)
+            if err and err.statusCode isnt 404 then return cb(err)
 
             try 
                 model = update_model( body , config ) 
@@ -194,8 +195,8 @@ exports.delete = deleteEntity = ( pkgname , version , checkAuthFunc , cb ) ->
 
         find _id , ( err , body ) ->
 
-            if err and err.status_code isnt 404 then return cb(err)
-            if err and err.status_code is 404 then return cb("没有找到 #{pkgname}, 请确认是否发布到源中。")
+            if err and err.statusCode isnt 404 then return cb(err)
+            if err and err.statusCode is 404 then return cb("没有找到 #{pkgname}, 请确认是否发布到源中。")
 
             checkAuthFunc body , ( err ) ->
 

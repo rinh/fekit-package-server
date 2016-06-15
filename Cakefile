@@ -1,6 +1,6 @@
 fs = require 'fs'
 
-{print} = require 'sys'
+{print} = require 'util'
 {spawn} = require 'child_process'
 
 process_stdio = (proc,callback) ->
@@ -14,7 +14,7 @@ build = (option,callback) ->
     process_stdio coffee , callback
 
 test = () ->
-    m = [ '--colors', '--recursive', '--compilers', 'coffee:coffee-script' ]
+    m = [ '--colors', '--recursive', '--compilers', 'coffee:coffee-script/register' , '--timeout' , '50000' ]
     console.info './node_modules/.bin/mocha' , m.join(' ')
     mocha = spawn './node_modules/.bin/mocha' , m
     process_stdio mocha
